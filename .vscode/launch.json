@@ -1,0 +1,57 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Admin/Frontend",
+            "configurations": [
+                "coders_cup_minigame_admin",
+                "coders_cup_minigame_frontend"
+            ]
+        }
+    ],
+    "configurations": [
+        {
+            "name": "coders_cup_minigame_admin",
+            "cwd": "coders_cup_minigame_admin",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "coders_cup_minigame_admin (profile mode)",
+            "cwd": "coders_cup_minigame_admin",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "coders_cup_minigame_admin (release mode)",
+            "cwd": "coders_cup_minigame_admin",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "coders_cup_minigame_frontend",
+            "cwd": "coders_cup_minigame_frontend",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "coders_cup_minigame_frontend (profile mode)",
+            "cwd": "coders_cup_minigame_frontend",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "coders_cup_minigame_frontend (release mode)",
+            "cwd": "coders_cup_minigame_frontend",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

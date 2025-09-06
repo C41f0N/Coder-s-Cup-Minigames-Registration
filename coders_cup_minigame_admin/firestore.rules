@@ -1,0 +1,75 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Email/password auth users (admins)
+    function signInProvider() {
+      return isSignedIn() ? request.auth.token.firebase.sign_in_provider : null;
+    }
+
+    function isEmailPasswordUser() {
+      return isSignedIn() && signInProvider() == 'password';
+    }
+
+    // Unauthenticated users
+    function isUnauthenticated() {
+      return request.auth == null;
+    }
+    
+    // Google authenticated users
+    function isGoogleUser() {
+      return isSignedIn() && signInProvider() == 'google.com';
+    }
+
+    // Top-level games collection
+    match /games/{gameId} {
+  // Games documents are readable by unauthenticated users, Google users, and admins
+  allow read: if isUnauthenticated() || isGoogleUser() || isEmailPasswordUser();
+      // Only email/password users may write game documents
+      allow write: if isEmailPasswordUser();
+
+      // Full responses subcollection (contains sensitive fields like answers)
+      match /responses/{responseId} {
+        // Allow anyone to read full response documents (temporarily public)
+        allow read: if true;
+
+  // Creation: allow admins, Google users, and unauthenticated clients to create responses
+  // (this preserves existing behaviour where anonymous/registering users can submit)
+  allow create: if isEmailPasswordUser() || isUnauthenticated() || isGoogleUser();
+
+        // Updates/deletes only allowed for email/password users (admins)
+        allow update, delete: if isEmailPasswordUser();
+
+        // Nested docs under a full response are admin-only for writes, admin-read too
+        match /{subPath=**} {
+          allow read, write: if isEmailPasswordUser();
+        }
+      }
+
+      // Public responses mirror: contains only public-safe fields (e.g. userName, score)
+      // Unauthenticated and Google users may read these documents; only admins may write them.
+      match /responses_public/{pubId} {
+        allow read: if isUnauthenticated() || isGoogleUser() || isEmailPasswordUser();
+        allow write: if isEmailPasswordUser();
+      }
+
+      // Any other nested documents under games are admin-write only
+      match /{doc=**} {
+        allow read: if isUnauthenticated() || isGoogleUser() || isEmailPasswordUser();
+        allow write: if isEmailPasswordUser();
+      }
+    }
+
+    // Global fallback: anyone can read top-level documents, only email/password users can write
+    match /{document=**} {
+      allow read: if isUnauthenticated() || isGoogleUser() || isEmailPasswordUser();
+      allow write: if isEmailPasswordUser();
+    }
+  }
+}
